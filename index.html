@@ -8,10 +8,7 @@
     <link rel="stylesheet" href="src/style.css" />
   </head>
   <body>
-<<<<<<< Updated upstream
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-=======
     <div class="card-container">
       <div class="card-content">
         <div class="design">
@@ -36,8 +33,16 @@
 
       </div>
     </div>
-    <script type="module" src="src/backend.js"></script>
+    <script type="module" src="src/database.js"></script>
+    <!-- node // buffer-->
+    <script>window.global = window;</script>
+    <script type="module">
+        import { Buffer } from "buffer/"; // <-- no typo here ("/")
+        import process from "process";
+      
+        window.Buffer = Buffer;
+        window.process = process;
+    </script>
 
->>>>>>> Stashed changes
   </body>
 </html>
