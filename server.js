@@ -1,7 +1,7 @@
-const executeStament = require("./connect.js");
+const executeStament = require("./public/connect.js");
 const http = require("http");
 const fs = require("fs");
-const executeStatement = require("./connect.js");
+const executeStatement = require("./public/connect.js");
 
 const server = http.createServer((req, res) => {
   if (req.method === "GET" && req.url === "/") {
