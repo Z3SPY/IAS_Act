@@ -14,6 +14,12 @@ app.get('/', (req, res) => {
 });
 
 
+// Route for handling register POST requests
+app.post('/register', (req, res) => {
+  
+})
+
+
 // Route for handling login POST requests
 app.post('/login', (req, res) => {
   let body = "";
