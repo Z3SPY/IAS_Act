@@ -1,63 +1,52 @@
+const { executeStatement, insertUser } = require('./src/connect');
+
 const express = require('express');
-const fs = require("fs");
-const executeStatement = require("./src/connect.js");
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Route for the root URL to serve index.html
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+// Define route for fetching greeting
+app.get('/get_greeting', (req, res) => {
+  // You can send any response you want here
+  res.send('Hello from the server!');
 });
 
-
-// Route for handling register POST requests
+// Define route for handling login POST requests
 app.post('/register', (req, res) => {
+  // Handle login logic here
+  // You can access form data from req.body
+  // Example: const username = req.body.username;
+  // Example: const password = req.body.password;
+  // Example: Perform authentication logic
   
-})
+  const formData = req.body;
+  console.log(formData); // Output the form data to the console
+  // Perform further processing with the form data
+  //res.send('Registration successful');
 
+});
 
-// Route for handling login POST requests
 app.post('/login', (req, res) => {
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
+  // Handle login logic here
+  // You can access form data from req.body
+  // Example: const username = req.body.username;
+  // Example: const password = req.body.password;
+  // Example: Perform authentication logic
+  
+  const formData = req.body;
+  console.log(formData); // Output the form data to the console
+  // Perform further processing with the form data
+  //res.send('Login successful');
 
-  req.on("end", () => {
-    const params = new URLSearchParams(body);
-    const username = params.get("username");
-    const password = params.get("password");
-
-    if (username === "user" && password === "password") {
-      res.status(200).send("Login successful");
-    } else {
-      res.status(401).send("Login failed");
-    }
-  });
 });
 
-// Route for handling /sql GET requests
-app.get('/sql', (req, res) => {
-  fs.readFile("./index.html", (err, data) => {
-    if (err) {
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-    console.log(executeStatement());
-    res.status(200).type('html').send(data);
-  });
-});
-
-// Handling other routes
-app.use((req, res) => {
-  res.status(404).send("Not Found");
-});
+// Serve your static files
+app.use(express.static('public'));
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Example app listening at http://localhost:${port}`);
 });

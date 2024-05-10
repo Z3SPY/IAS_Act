@@ -22,7 +22,6 @@ connection.on("connect", function(err) {
     console.log(err);
   } else {
     console.log("Connected");
-    executeStatement();
   }
 });
 
@@ -58,9 +57,54 @@ function executeStatement() {
 
   // Close the connection after the final event emitted by the request, after the callback passes
   request.on("requestCompleted", function(rowCount, more) {
-    connection.close();
+    //connection.close();
   });
   connection.execSql(request);
 }
 
-module.exports = executeStatement;
+function insertUser(username, password, email) {
+  // Generate a random ID
+  var randomID = generateRandomID();
+
+  var request = new Request(
+    "INSERT INTO [dbo].[UserAccount] (UserID, Username, Password, Email) VALUES (@ID, @Username, @Password, @Email);",
+    function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("User inserted successfully.");
+      }
+    }
+  );
+
+  // Add parameters for the ID, username, password, and email
+  request.addParameter("ID", TYPES.NVarChar, randomID);
+  request.addParameter("Username", TYPES.NVarChar, username);
+  request.addParameter("Password", TYPES.NVarChar, password);
+  request.addParameter("Email", TYPES.NVarChar, email);
+
+  // Close the connection after the final event emitted by the request, after the callback passes
+  request.on("requestCompleted", function() {
+    //connection.close();
+  });
+
+  connection.execSql(request);
+}
+
+// Function to generate a random ID
+function generateRandomID() {
+  var characters = "0123456789";
+  var length = 5;
+  var randomID = "";
+  for (var i = 0; i < length; i++) {
+    randomID += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return randomID;
+}
+
+// Exporting the function without executing it
+module.exports = {
+  connection: connection,
+  executeStatement: executeStatement,
+  insertUser: insertUser,
+};
