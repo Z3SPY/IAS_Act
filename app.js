@@ -32,34 +32,47 @@ app.get('/get_greeting', (req, res) => {
 });
 
 // Define route for handling login POST requests
-app.post('/register', (req, res) => {
-  // Handle login logic here
-  // You can access form data from req.body
-  // Example: const username = req.body.username;
-  // Example: const password = req.body.password;
-  // Example: Perform authentication logic
-  
-  const formData = req.body;
-  console.log(formData); // Output the form data to the console
-  // Perform further processing with the form data
-  //res.send('Registration successful');
-  //getSpecificUser(formData.username, formData.password);
+app.post('/register', async (req, res) => {
+  try {
+    const formData = req.body;
+    console.log(formData); 
+
+    const newUser = await insertUser(formData.username, formData.password, formData.email, formData.Fname, formData.Lname, formData.kingdom, formData.clan);
+
+    // Assuming insertUser returns some data about the newly inserted user
+    res.status(201).json(newUser); // Send a success response with the newly inserted user data
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error occurred');
+  }
 });
 
-app.post('/login', (req, res) => {
-  // Handle login logic here
-  // You can access form data from req.body
-  // Example: const username = req.body.username;
-  // Example: const password = req.body.password;
-  // Example: Perform authentication logic
-  
-  const formData = req.body;
-  console.log(formData); // Output the form data to the console
-  // Perform further processing with the form data
-  //res.send('Login successful');
-  getUsers();
+app.post('/login', async (req, res) => {
+  try {
+    const formData = req.body;
+    console.log(formData); // Output the form data to the console
+    
+    // Call getUsers function to fetch users
+    const users = await getSpecificUser(formData.username, formData.password);
+    
+    // Log the fetched users
+    console.log(users);
 
+    if (users) {
+      // Redirect to the home page
+      res.redirect('/home');
+    } else {
+      // If login is unsuccessful, send an error response
+      res.status(401).send('Invalid username or password');
+    }
+    
+    // Send response or perform further logic based on the fetched users
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error occurred');
+  }
 });
+
 
 // Serve your static files
 app.use(express.static('public'));

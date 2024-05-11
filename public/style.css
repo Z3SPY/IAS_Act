@@ -175,10 +175,10 @@
     border-radius: 1cap;
     border-radius: 10px;  
     background-color: rgb(241, 235, 235);
-    padding: 10px; /* Add padding for better appearance */
+    padding: 5px; /* Add padding for better appearance */
     border:solid 1px #ccc;
     width: 110%; /* Make it full width */
-    color: black;
+    color: rgba(0, 0, 0, 0.664);
 
     background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" width="12" height="12"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
     background-repeat: no-repeat;
@@ -231,8 +231,8 @@
     flex-direction: column;
   }
 
-  .Sign-up-form #password, .Sign-up-form #confirmPassword, 
-   .Sign-in-form #confirmPassword {
+  .Sign-up-form #regPassword, .Sign-up-form #confirmPassword, 
+   .Sign-in-form #confirmPassword, .Sign-up-form #email {
     margin-top: -35px; /* Add margin between each input */
   }
 
@@ -247,7 +247,7 @@
   .Sign-up-form #Fname, .Sign-up-form #Lname {
     width: 100%;
   }
-  #username, #password, #confirmPassword {
+  #username, #password, #confirmPassword, #regUsername, #regPassword, #email {
     width: 110%;
     
   }
@@ -262,10 +262,15 @@
     height: 2rem;
     border-radius: 5rem;
     width: 100%;
-    margin: 0 5%;
+    position: relative;
+    margin: -30px 5%;
     box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.5);
     border: 0;
     transition: transform 400ms;
+  }
+
+  .Sign-in-form input[type="submit"]{
+    margin: 0px 5%;
   }
 
   .submit:hover {

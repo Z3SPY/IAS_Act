@@ -56,7 +56,7 @@ async function getUsers() {
   });
 }
 
-function getSpecificUser(username, password) {
+async function getSpecificUser(username, password) {
   console.log("pog");
 
   return new Promise((resolve, reject) => {
@@ -94,12 +94,9 @@ function getSpecificUser(username, password) {
 }
 
 
-function insertUser(username, password, email) {
-  // Generate a random ID
-  var randomID = generateRandomID();
-
+function insertUser(username, password, email, firstName, lastName, clan, kingdom) {
   var request = new Request(
-    "INSERT INTO [dbo].[UserAccount] (UserID, Username, Password, Email) VALUES (@ID, @Username, @Password, @Email);",
+    "INSERT INTO [dbo].[UserAccount] (Username, Password, Email, FirstName, LastName, Clan, Kingdom) VALUES (@Username, @Password, @Email, @FirstName, @LastName, @Clan, @Kingdom);",
     function(err) {
       if (err) {
         console.log(err);
@@ -109,39 +106,14 @@ function insertUser(username, password, email) {
     }
   );
 
-  // Add parameters for the ID, username, password, and email
-  request.addParameter("ID", TYPES.NVarChar, randomID);
+  // Add parameters for username, password, email, firstName, lastName, clan, and kingdom
   request.addParameter("Username", TYPES.NVarChar, username);
   request.addParameter("Password", TYPES.NVarChar, password);
   request.addParameter("Email", TYPES.NVarChar, email);
-
-  // Close the connection after the final event emitted by the request, after the callback passes
-  request.on("requestCompleted", function(rowCount, more) {
-    //connection.close();
-  });
-  connection.execSql(request);
-}
-
-function insertUser(username, password, email) {
-  // Generate a random ID
-  var randomID = generateRandomID();
-
-  var request = new Request(
-    "INSERT INTO [dbo].[UserAccount] (UserID, Username, Password, Email) VALUES (@ID, @Username, @Password, @Email);",
-    function(err) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("User inserted successfully.");
-      }
-    }
-  );
-
-  // Add parameters for the ID, username, password, and email
-  request.addParameter("ID", TYPES.NVarChar, randomID);
-  request.addParameter("Username", TYPES.NVarChar, username);
-  request.addParameter("Password", TYPES.NVarChar, password);
-  request.addParameter("Email", TYPES.NVarChar, email);
+  request.addParameter("FirstName", TYPES.NVarChar, firstName);
+  request.addParameter("LastName", TYPES.NVarChar, lastName);
+  request.addParameter("Clan", TYPES.NVarChar, clan);
+  request.addParameter("Kingdom", TYPES.NVarChar, kingdom);
 
   // Close the connection after the final event emitted by the request, after the callback passes
   request.on("requestCompleted", function() {
@@ -150,6 +122,7 @@ function insertUser(username, password, email) {
 
   connection.execSql(request);
 }
+
 
 // Function to generate a random ID
 function generateRandomID() {
