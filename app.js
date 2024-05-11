@@ -1,11 +1,28 @@
-const { executeStatement, insertUser } = require('./src/connect');
 
+const { getUsers, insertUser } = require('./src/connect');
 const express = require('express');
+const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
 
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+
+// Route for the root URL to serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/home.html'));
+});
+
+app.get('/home', async (req, res) => {
+  users = await getUsers()
+  data = users
+  console.log(users)
+  res.render('home.ejs', { data }); // Pass data to the template
+});
+// Route for handling login POST requests
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define route for fetching greeting

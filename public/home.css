@@ -1,0 +1,30 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 15px;
+  border: none;
+  text-align: left;
+}
+
+th {
+  background-color: #3498db; /* Blue for headers */
+  color: #fff; /* White text for headers */
+}
+
+td {
+  color: #666; /* Darker text for data cells */
+}
+
+tr:nth-child(even) { /* Alternate row background color */
+  background-color: #e0e0e0;
+}
+
+tr:hover { /* Hover effect for rows */
+  background-color: #d0e4f5; /* Light blue on hover */
+}

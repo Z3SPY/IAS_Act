@@ -71,7 +71,7 @@
   .design {
     background-color: #000000;
     flex-grow: 2;
-    background-image: url('/knight.jpg'); /* specify the path to your image */
+    background-image: url('./knight.jpg'); /* specify the path to your image */
     background-size: cover; /* adjust the size of the background image */
     background-position: center; /* position the background image */
     box-shadow: 
@@ -232,7 +232,7 @@
   }
 
   .Sign-up-form #password, .Sign-up-form #confirmPassword, 
-  .Sign-in-form #password, .Sign-in-form #confirmPassword {
+   .Sign-in-form #confirmPassword {
     margin-top: -35px; /* Add margin between each input */
   }
 
@@ -248,7 +248,7 @@
     width: 100%;
   }
   #username, #password, #confirmPassword {
-    width: 100%;
+    width: 110%;
     
   }
 
