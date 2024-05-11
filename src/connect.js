@@ -56,12 +56,12 @@ async function getUsers() {
   });
 }
 
-async function getSpecificUser(username, password) {
+async function getSpecificUser(username) {
   console.log("pog");
 
   return new Promise((resolve, reject) => {
     var request = new Request(
-      "SELECT * FROM [dbo].[UserAccount] WHERE Username = @Username AND Password = @Password;",
+      "SELECT * FROM [dbo].[UserAccount] WHERE Username = @Username;",
       (err) => {
         if (err) {
           console.log(err);
@@ -73,7 +73,6 @@ async function getSpecificUser(username, password) {
 
     // Add parameters for the username and password
     request.addParameter("Username", TYPES.NVarChar, username);
-    request.addParameter("Password", TYPES.NVarChar, password);
 
     var result = null;
 
@@ -94,9 +93,11 @@ async function getSpecificUser(username, password) {
 }
 
 
-function insertUser(username, password, email, firstName, lastName, clan, kingdom) {
+function insertUser(username, passwordHash, salt, email, firstName, lastName, clan, kingdom) {
   var request = new Request(
-    "INSERT INTO [dbo].[UserAccount] (Username, Password, Email, FirstName, LastName, Clan, Kingdom) VALUES (@Username, @Password, @Email, @FirstName, @LastName, @Clan, @Kingdom);",
+    "INSERT INTO [dbo].[UserAccount] \
+    (Username, PasswordHash, Salt, Email, FirstName, LastName, Clan, Kingdom) \
+    VALUES (@Username, @PasswordHash, @Salt, @Email, @FirstName, @LastName, @Clan, @Kingdom);",
     function(err) {
       if (err) {
         console.log(err);
@@ -108,7 +109,8 @@ function insertUser(username, password, email, firstName, lastName, clan, kingdo
 
   // Add parameters for username, password, email, firstName, lastName, clan, and kingdom
   request.addParameter("Username", TYPES.NVarChar, username);
-  request.addParameter("Password", TYPES.NVarChar, password);
+  request.addParameter("PasswordHash", TYPES.NVarChar, passwordHash);
+  request.addParameter("Salt", TYPES.NVarChar, salt);
   request.addParameter("Email", TYPES.NVarChar, email);
   request.addParameter("FirstName", TYPES.NVarChar, firstName);
   request.addParameter("LastName", TYPES.NVarChar, lastName);
@@ -121,18 +123,6 @@ function insertUser(username, password, email, firstName, lastName, clan, kingdo
   });
 
   connection.execSql(request);
-}
-
-
-// Function to generate a random ID
-function generateRandomID() {
-  var characters = "0123456789";
-  var length = 5;
-  var randomID = "";
-  for (var i = 0; i < length; i++) {
-    randomID += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return randomID;
 }
 
 // Exporting the function without executing it

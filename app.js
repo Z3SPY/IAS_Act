@@ -3,34 +3,39 @@ const { getUsers, insertUser, getSpecificUser } = require('./src/connect');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const crypto = require('crypto');
 
 const app = express();
 const port = 3000;
 
+function setPassword(password) {
+  salt = crypto.randomBytes(16).toString('hex');
+    // Hashing user's salt and password with 1000 iterations, 64 length and sha512 digest
+  hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`)
+  return [salt, hash]
+}
+function isPassValid(password, salt, givenHash) {
+  let hash = crypto.pbkdf2Sync(password,
+          salt, 1000, 64, `sha512`).toString(`hex`);
+      return givenHash === hash;
+}
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Route for the root URL to serve index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/home.html'));
 });
 
-app.get('/home', async (req, res) => {
-  users = await getUsers()
-  data = users
-  console.log(users)
-  res.render('home.ejs', { data }); // Pass data to the template
-});
-// Route for handling login POST requests
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define route for fetching greeting
 app.get('/get_greeting', (req, res) => {
   // You can send any response you want here
   res.send('Hello from the server!');
 });
-
 // Define route for handling login POST requests
 app.post('/register', async (req, res) => {
   try {
@@ -38,10 +43,18 @@ app.post('/register', async (req, res) => {
     console.log(formData); 
 
     let newUser = null;
-
+    const users = await getSpecificUser(formData.username);
+    if(users){
+      res.status(400).send('Passwords do not match');
+      console.log("Invalid Username")
+      return
+    }
     if (formData.password === formData.confirmPassword) {
-      newUser = await insertUser(formData.username, formData.password, formData.email, formData.Fname, formData.Lname, formData.kingdom, formData.clan);
+      password = setPassword(formData.password)
+      newUser = insertUser(formData.username, password[1].toString(), password[0].toString(), formData.email, formData.Fname, formData.Lname, formData.kingdom, formData.clan);
       res.status(201).json(newUser); // Send a success response with the newly inserted user data
+      const data = await getUsers()
+      res.render('home.ejs', { data }); // Pass data to the template
     } else {
       // Passwords do not match, display an error pop-
       res.status(400).send('Passwords do not match');
@@ -60,14 +73,16 @@ app.post('/login', async (req, res) => {
     console.log(formData); // Output the form data to the console
     
     // Call getUsers function to fetch users
-    const users = await getSpecificUser(formData.username, formData.password);
-    
+    const user = await getSpecificUser(formData.username);
     // Log the fetched users
-    console.log(users);
+    console.log(user);
+    console.log(user.Salt)
+    console.log(user.PasswordHash)
 
-    if (users) {
+    if (isPassValid(formData.password, user.Salt, user.PasswordHash)) {
       // Redirect to the home page
-      res.redirect('/home');
+      const data = await getUsers()
+      res.render('home.ejs', { data }); // Pass data to the template
     } else {
       // If login is unsuccessful, send an error response
       res.status(401).send('Invalid username or password');
