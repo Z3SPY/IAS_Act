@@ -1,5 +1,5 @@
 
-const { getUsers, insertUser } = require('./src/connect');
+const { getUsers, insertUser, getSpecificUser } = require('./src/connect');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -43,7 +43,7 @@ app.post('/register', (req, res) => {
   console.log(formData); // Output the form data to the console
   // Perform further processing with the form data
   //res.send('Registration successful');
-
+  //getSpecificUser(formData.username, formData.password);
 });
 
 app.post('/login', (req, res) => {
@@ -57,6 +57,7 @@ app.post('/login', (req, res) => {
   console.log(formData); // Output the form data to the console
   // Perform further processing with the form data
   //res.send('Login successful');
+  getUsers();
 
 });
 

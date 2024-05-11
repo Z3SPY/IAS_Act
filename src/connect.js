@@ -56,6 +56,43 @@ async function getUsers() {
   });
 }
 
+function getSpecificUser(username, password) {
+  console.log("pog");
+
+  return new Promise((resolve, reject) => {
+    var request = new Request(
+      "SELECT * FROM [dbo].[UserAccount] WHERE Username = @Username AND Password = @Password;",
+      (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+          return;
+        }
+      }
+    );
+
+    // Add parameters for the username and password
+    request.addParameter("Username", TYPES.NVarChar, username);
+    request.addParameter("Password", TYPES.NVarChar, password);
+
+    var result = null;
+
+    request.on("row", (columns) => {
+      result = {};
+      columns.forEach((column) => {
+        result[column.metadata.colName] = column.value;
+      });
+    });
+
+    // Close the connection after the final event emitted by the request, after the callback passes
+    request.on("requestCompleted", () => {
+      resolve(result);
+    });
+
+    connection.execSql(request);
+  });
+}
+
 
 function insertUser(username, password, email) {
   // Generate a random ID
@@ -129,5 +166,6 @@ function generateRandomID() {
 module.exports = {
   connection: connection,
   getUsers: getUsers,
+  getSpecificUser: getSpecificUser,
   insertUser: insertUser,
 };
