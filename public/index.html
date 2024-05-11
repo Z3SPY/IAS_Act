@@ -48,8 +48,10 @@
         <div class="Sign-up-form">
           <!-- Use htmx to make a GET request to '/get_greeting' -->
           <p id="welcome-message" hx-get="/get_greeting" hx-swap="innertext"></p>
+          <div id="error-message" style="color: white; font-weight: bolder; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.5); border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;"></div>
+
           <!-- Use htmx to make a POST request to '/login' -->
-          <form hx-post="/register" hx-target="#result">
+          <form hx-post="/register" hx-target="#result" onsubmit="return validateForm()">
             <div style="display: flex; flex-direction: row; padding-bottom: 15px; gap: 10px;">
 
               <input type="text" id="Fname" name="Fname" placeholder="First Name" required />
@@ -93,6 +95,21 @@
 </body>
 
 <script>
+  async function validateForm() {
+  var password = document.getElementById('regPassword').value;
+  var confirmPassword = document.getElementById('confirmPassword').value;
+  if (password !== confirmPassword) {
+    var errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = 'Passwords do not match';
+    errorMessage.style.display = 'block'; // Show the error message
+    setTimeout(function() {
+      errorMessage.style.display = 'none'; // Hide the error message after 2 seconds
+    }, 2000);
+    return false; // Prevent form submission
+  }
+  return true; // Proceed with form submission
+}
+
   // Select all <p> elements within the .switch div
 const paragraphs = document.querySelectorAll('.switch p');
 

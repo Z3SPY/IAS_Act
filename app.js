@@ -37,15 +37,22 @@ app.post('/register', async (req, res) => {
     const formData = req.body;
     console.log(formData); 
 
-    const newUser = await insertUser(formData.username, formData.password, formData.email, formData.Fname, formData.Lname, formData.kingdom, formData.clan);
+    let newUser = null;
 
-    // Assuming insertUser returns some data about the newly inserted user
-    res.status(201).json(newUser); // Send a success response with the newly inserted user data
+    if (formData.password === formData.confirmPassword) {
+      newUser = await insertUser(formData.username, formData.password, formData.email, formData.Fname, formData.Lname, formData.kingdom, formData.clan);
+      res.status(201).json(newUser); // Send a success response with the newly inserted user data
+    } else {
+      // Passwords do not match, display an error pop-
+      res.status(400).send('Passwords do not match');
+      console.log("Does not match");
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send('Error occurred');
   }
 });
+
 
 app.post('/login', async (req, res) => {
   try {
