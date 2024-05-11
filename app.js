@@ -1,19 +1,24 @@
+const { getUsers, insertUser } = require('./src/connect');
 const express = require('express');
-const fs = require("fs");
-const executeStatement = require("./src/connect.js");
-
+const path = require('path');
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 
 // Route for the root URL to serve index.html
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(path.join(__dirname, 'public/home.html'));
 });
 
-
+app.get('/home', async (req, res) => {
+  users = await getUsers()
+  data = users
+  console.log(users)
+  res.render('home.ejs', { data }); // Pass data to the template
+});
 // Route for handling login POST requests
 app.post('/login', (req, res) => {
   let body = "";
@@ -27,28 +32,12 @@ app.post('/login', (req, res) => {
     const password = params.get("password");
 
     if (username === "user" && password === "password") {
-      res.status(200).send("Login successful");
+      console.log("LOGGED IN")
+      res.redirect('/home');
     } else {
       res.status(401).send("Login failed");
     }
   });
-});
-
-// Route for handling /sql GET requests
-app.get('/sql', (req, res) => {
-  fs.readFile("./index.html", (err, data) => {
-    if (err) {
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-    console.log(executeStatement());
-    res.status(200).type('html').send(data);
-  });
-});
-
-// Handling other routes
-app.use((req, res) => {
-  res.status(404).send("Not Found");
 });
 
 // Start the server

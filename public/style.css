@@ -35,7 +35,7 @@
   .design {
     background-color: #000000;
     flex-grow: 2;
-    background-image: url('/knight.jpg'); /* specify the path to your image */
+    background-image: url('./knight.jpg'); /* specify the path to your image */
     background-size: cover; /* adjust the size of the background image */
     background-position: center; /* position the background image */
     box-shadow: 

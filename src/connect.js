@@ -22,7 +22,6 @@ connection.on("connect", function(err) {
     console.log(err);
   } else {
     console.log("Connected");
-    executeStatement();
   }
 });
 
@@ -31,36 +30,76 @@ connection.connect();
 var Request = require("tedious").Request;
 var TYPES = require("tedious").TYPES;
 
-function executeStatement() {
-  var request = new Request("SELECT * FROM [dbo].[UserAccount];", function(
-    err,
-  ) {
-    if (err) {
-      console.log(err);
-    }
-  });
-  var result = "";
-  request.on("row", function(columns) {
-    columns.forEach(function(column) {
-      if (column.value === null) {
-        console.log("NULL");
-      } else {
-        result += column.value + " ";
+async function getUsers() {
+  return new Promise((resolve, reject) => {
+    var request = new Request("SELECT * FROM [dbo].[UserAccount];", (err) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
       }
     });
-    console.log(result);
-    result = "";
-  });
+    var result = [];
+    request.on("row", (columns) => {
+      var row = {};
+      columns.forEach((column) => {
+        row[column.metadata.colName] = column.value;
+      });
+      result.push(row);
+    });
 
-  request.on("done", function(rowCount, more) {
-    console.log(rowCount + " rows returned");
+    // Close the connection after the final event emitted by the request, after the callback passes
+    request.on("requestCompleted", (rowCount, more) => {
+      resolve(result);
+    });
+    connection.execSql(request);
   });
+}
+
+
+function insertUser(username, password, email) {
+  // Generate a random ID
+  var randomID = generateRandomID();
+
+  var request = new Request(
+    "INSERT INTO [dbo].[UserAccount] (UserID, Username, Password, Email) VALUES (@ID, @Username, @Password, @Email);",
+    function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("User inserted successfully.");
+      }
+    }
+  );
+
+  // Add parameters for the ID, username, password, and email
+  request.addParameter("ID", TYPES.NVarChar, randomID);
+  request.addParameter("Username", TYPES.NVarChar, username);
+  request.addParameter("Password", TYPES.NVarChar, password);
+  request.addParameter("Email", TYPES.NVarChar, email);
 
   // Close the connection after the final event emitted by the request, after the callback passes
-  request.on("requestCompleted", function(rowCount, more) {
-    connection.close();
+  request.on("requestCompleted", function() {
+    //connection.close();
   });
+
   connection.execSql(request);
 }
 
-module.exports = executeStatement;
+
+// Function to generate a random ID
+function generateRandomID() {
+  var characters = "0123456789";
+  var length = 5;
+  var randomID = "";
+  for (var i = 0; i < length; i++) {
+    randomID += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return randomID;
+}
+
+module.exports = {
+  connection: connection,
+  getUsers: getUsers,
+  insertUser: insertUser,
+};
