@@ -4,6 +4,8 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const axios = require('axios');
+const { warn } = require('console');
 
 const app = express();
 const port = 3000;
@@ -74,6 +76,27 @@ app.post('/login', async (req, res) => {
     
     // Call getUsers function to fetch users
     const user = await getSpecificUser(formData.username);
+
+    const hcaptchaResponse = formData['h-captcha-response']; // Use the h-captcha-response key
+    const hcaptchaSecretKey = 'ES_7e2983223b5c4601a84fdc82bdc5359c';
+    const verificationUrl = `https://hcaptcha.com/siteverify`;
+    const verificationData = {
+      secret: hcaptchaSecretKey,
+      response: hcaptchaResponse
+    };
+    const hcaptchaVerification = await axios.post(verificationUrl, verificationData);
+
+    if (hcaptchaVerification.data.success) {
+      console.log("VERIFICATION SUCCESS")
+      // res.status(400).send('hCaptcha verification failed');
+      return;
+    }
+    else{
+      res.status(400).send('hCaptcha verification failed');
+      console.log(hcaptchaVerification.data)
+      return;
+    }
+    
     // Log the fetched users
     console.log(user);
     console.log(user.Salt)
