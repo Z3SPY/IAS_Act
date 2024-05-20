@@ -1,38 +1,142 @@
+
+<div id="result" hx-swap="innerHTML">
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Form</title>
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.7.0/dist/htmx.js"></script>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.7.0/dist/htmx.js"></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
 <body>
+  <img src="./wheel.png" class="bg-image w2">
+  <img src="./wheel.png" class="bg-image w1">
+
   <div class="card-container">
     <div class="card-content">
       <div class="design"></div>
+
       <div class="user-input">
-        <h1>Login Form</h1>
-      <p id="welcome-message" hx-get="/get_greeting" hx-swap="innertext">--</p>
-      <form hx-post="/login" hx-target="#result">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required /><br /><br />
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required /><br /><br />
-        <input type="submit" value="Login" />
-      </form>
-      <div id="result"></div>
+        <h1  class="title">Create Account</h1>
+        <p class="intro"> Register as a knight in the court of the empire </p>
+
+
+        <div class="switch">
+          <p id="signIn"> Sign In </p>
+          <p id="signUp" class="selected"> Sign Up </p>
+        </div>
+
+
+        <div class="Sign-in-form">
+
+          <!-- Use htmx to make a GET request to '/get_greeting' -->
+          <p id="welcome-message" hx-get="/get_greeting" hx-swap="innertext"></p>
+          <!-- Use htmx to make a POST request to '/login' -->
+          <form hx-post="/login" hx-target="#result">
+            <input type="text" id="username" name="username" placeholder="Username" required /><br /><br />
+            <input type="password" id="password" name="password" placeholder="Password" required /><br /><br />
+             <div class="h-captcha" data-sitekey='9a2ea000-4408-48aa-a84c-d414e12a7d94'></div>
+            <input type="submit" value="LOGIN" class="submit"/>
+          </form>
+          <div id="result"></div>
+
+
+        </div>
+
+        <div class="Sign-up-form">
+          <!-- Use htmx to make a GET request to '/get_greeting' -->
+          <p id="welcome-message" hx-get="/get_greeting" hx-swap="innertext"></p>
+          <div id="error-message" style="color: white; font-weight: bolder; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.5); border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;"></div>
+
+          <!-- Use htmx to make a POST request to '/login' -->
+          <form hx-post="/register" hx-target="#result" onsubmit="return validateForm()">
+            <div style="display: flex; flex-direction: row; padding-bottom: 15px; gap: 10px;">
+
+              <input type="text" id="Fname" name="Fname" placeholder="First Name" required />
+              <input type="text" id="Lname" name="Lname" placeholder="Last Name" required />
+            </div>
+
+            <input type="text" id="regUsername" name="username" placeholder="Username" required /><br /><br />
+            <input type="email" id="email" name="email" required placeholder="Email" /><br /><br />
+            <input type="password" id="regPassword" name="password" required placeholder="Password" /><br /><br />
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm Password" /><br /><br />
+
+            <label for="kingdom" id="k-label">Kingdom:</label>
+            <select id="kingdom" name="kingdom">
+              <option value="kingdom1">Independent</option>
+              <option value="kingdom2">Kingdom 2</option>
+              <option value="kingdom3">Kingdom 3</option>
+              <!-- Add more options as needed -->
+            </select><br /><br />
+        
+            <!-- Dropdown for clans -->
+            <label for="clan" id="c-label">Clan:</label>
+            <select id="clan"  name="clan">
+              <option value="clan1">Clan 1</option>
+              <option value="clan2">Clan 2</option>
+              <option value="clan3">Clan 3</option>
+              <!-- Add more options as needed -->
+            </select><br /><br />
+
+            <input type="submit" value="REGISTER" class="submit"/>
+          </form>
+          <div id="result"></div>
+
+
+        </div>
+        
       </div>
-      
     </div>
-    
   </div>
+
 
 </body>
 
+<script>
+  async function validateForm() {
+  var password = document.getElementById('regPassword').value;
+  var confirmPassword = document.getElementById('confirmPassword').value;
+  if (password !== confirmPassword) {
+    var errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = 'Passwords do not match';
+    errorMessage.style.display = 'block'; // Show the error message
+    setTimeout(function() {
+      errorMessage.style.display = 'none'; // Hide the error message after 2 seconds
+    }, 2000);
+    return false; // Prevent form submission
+  }
+  return true; // Proceed with form submission
+}
+
+  // Select all <p> elements within the .switch div
+const paragraphs = document.querySelectorAll('.switch p');
+
+// Add event listener to each <p> element
+paragraphs.forEach(paragraph => {
+  paragraph.addEventListener('click', () => {
+    // Remove 'selected' class from all <p> elements
+    paragraphs.forEach(p => p.classList.remove('selected'));
+    // Add 'selected' class to the clicked <p> element
+    paragraph.classList.add('selected');
+
+      // Toggle visibility of forms based on selection
+    const signInForm = document.querySelector('.Sign-in-form');
+    const signUpForm = document.querySelector('.Sign-up-form');
+
+    if (paragraph.id === 'signIn') {
+      signInForm.style.display = 'block';
+      signUpForm.style.display = 'none';
+    } else if (paragraph.id === 'signUp') {
+      signInForm.style.display = 'none';
+      signUpForm.style.display = 'block';
+    }
+    
+  });
+});
+</script>
+
 </html>
-
-

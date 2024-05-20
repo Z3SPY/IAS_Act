@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<div hx-target="this" hx-refresh>
+<html lang="en">
+<head >
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People of the Realm</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <table hx-target="this">
+    <thead>
+      <tr>
+        <th>UserID</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Clan</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (const person of data) { %>
+        <tr>
+          <td><%= person.UserID %></td>
+          <td><%= person.Username %></td>
+          <td><%= person.FirstName %></td>
+          <td><%= person.LastName %></td>
+          <td><%= person.Clan %></td>
+          <td><%= person.Email %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <script src="https://unpkg.com/htmx.org@1.7.2"></script>
+</body>
+</html>
+</div>
+
